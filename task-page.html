@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Arial, sans-serif;
+      }
+      body { max-width: 960px; margin: 0 auto; padding: 24px; line-height: 1.5; }
+      .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+      section { border: 1px solid #999; border-radius: 12px; padding: 16px; }
+      label { display: block; margin: 8px 0 4px; }
+      input, select, button { width: 100%; padding: 10px; box-sizing: border-box; }
+      button { cursor: pointer; margin-top: 10px; }
+      ul { list-style: none; padding: 0; }
+      li { display: flex; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 1px solid #ccc; }
+      .task-meta { font-size: 0.9em; opacity: 0.8; }
+      .actions { display: flex; gap: 8px; }
+      .actions button { width: auto; }
+      .row { display: flex; gap: 8px; }
+      .row > * { flex: 1; }
+      pre { white-space: pre-wrap; word-break: break-word; }
+    </style>
+  </head>
+  <body>
+    <h1>Task Manager</h1>
+    <p>Browser demo for the existing task features: add, list, search, mark done, delete, and export CSV.</p>
+
+    <div class="grid">
+      <section>
+        <h2>Add task</h2>
+        <label for="title">Title</label>
+        <input id="title" placeholder="Buy milk" />
+        <label for="priority">Priority</label>
+        <select id="priority">
+          <option value="low">low</option>
+          <option value="medium" selected>medium</option>
+          <option value="high">high</option>
+        </select>
+        <label for="tags">Tags</label>
+        <input id="tags" placeholder="home,errands" />
+        <button id="addBtn">Add task</button>
+      </section>
+
+      <section>
+        <h2>Find tasks</h2>
+        <label for="search">Search by title</label>
+        <input id="search" placeholder="milk" />
+        <div class="row">
+          <button id="listBtn">List all</button>
+          <button id="searchBtn">Search</button>
+        </div>
+        <button id="exportBtn">Export CSV</button>
+      </section>
+    </div>
+
+    <section style="margin-top:16px;">
+      <h2>Tasks</h2>
+      <ul id="tasks"></ul>
+    </section>
+
+    <section style="margin-top:16px;">
+      <h2>CSV export</h2>
+      <pre id="csv">Click Export CSV to view output here.</pre>
+    </section>
+
+    <script>
+      const tasks = [
+        { id: 1, title: 'Buy milk', completed: false, priority: 'medium', tags: ['home'] },
+        { id: 2, title: 'Finish report', completed: true, priority: 'high', tags: ['work'] },
+      ];
+
+      const tasksEl = document.getElementById('tasks');
+      const csvEl = document.getElementById('csv');
+      const render = (items) => {
+        tasksEl.innerHTML = '';
+        if (!items.length) {
+          tasksEl.innerHTML = '<li>No tasks found.</li>';
+          return;
+        }
+        items.forEach((task) => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <div>
+              <strong>#${task.id} ${task.title}</strong>
+              <div class="task-meta">${task.completed ? 'done' : 'todo'} · ${task.priority} · ${task.tags.join(', ') || 'no tags'}</div>
+            </div>
+            <div class="actions">
+              <button data-action="done">Done</button>
+              <button data-action="delete">Delete</button>
+            </div>
+          `;
+          li.querySelector('[data-action="done"]').onclick = () => { task.completed = true; render(items); };
+          li.querySelector('[data-action="delete"]').onclick = () => render(items.filter((t) => t.id !== task.id));
+          tasksEl.appendChild(li);
+        });
+      };
+
+      document.getElementById('addBtn').onclick = () => {
+        const title = document.getElementById('title').value.trim();
+        if (!title) return alert('Enter a title');
+        tasks.push({
+          id: Date.now(),
+          title,
+          completed: false,
+          priority: document.getElementById('priority').value,
+          tags: document.getElementById('tags').value.split(',').map((t) => t.trim()).filter(Boolean),
+        });
+        render(tasks);
+      };
+
+      document.getElementById('listBtn').onclick = () => render(tasks);
+      document.getElementById('searchBtn').onclick = () => {
+        const q = document.getElementById('search').value.toLowerCase();
+        render(tasks.filter((t) => t.title.toLowerCase().includes(q)));
+      };
+      document.getElementById('exportBtn').onclick = () => {
+        csvEl.textContent = ['id,title,completed,priority', ...tasks.map((t) => `${t.id},"${t.title.replace(/"/g, '""')}",${t.completed},${t.priority}`)].join('\n');
+      };
+
+      render(tasks);
+    </script>
+  </body>
+</html>
