@@ -36,7 +36,8 @@ program
 
     tasks.forEach((task) => {
       const status = task.completed ? 'done' : 'todo';
-      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` [${task.tags.join(', ')}]` : ''} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
+      const createdAt = new Date(task.createdAt).toLocaleString();
+      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` [${task.tags.join(', ')}]` : ''} (created ${createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
     });
   });
 
@@ -67,7 +68,8 @@ program
 
     tasks.forEach((task) => {
       const status = task.completed ? 'done' : 'todo';
-      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` [${task.tags.join(', ')}]` : ''} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
+      const createdAt = new Date(task.createdAt).toLocaleString();
+      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` [${task.tags.join(', ')}]` : ''} (created ${createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
     });
   });
 
