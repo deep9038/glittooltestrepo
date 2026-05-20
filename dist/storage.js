@@ -20,6 +20,7 @@ function readTasks() {
     return tasks.map((task) => ({
         ...task,
         tags: Array.isArray(task.tags) ? task.tags : [],
+        createdAt: typeof task.createdAt === 'string' ? task.createdAt : new Date().toISOString(),
     }));
 }
 function writeTasks(tasks) {

@@ -8,9 +8,16 @@ function escapeCsv(value: string): string {
 }
 
 export function tasksToCsv(tasks: Task[]): string {
-  const header = 'id,title,completed,priority,tag';
+  const header = 'id,title,completed,priority,tags,dueDate';
   const rows = tasks.map((task) =>
-    [task.id, escapeCsv(task.title), task.completed, task.priority, escapeCsv(task.tag ?? '')].join(',')
+    [
+      task.id,
+      escapeCsv(task.title),
+      task.completed,
+      task.priority,
+      escapeCsv(task.tags.join(';')),
+      escapeCsv(task.dueDate ?? ''),
+    ].join(',')
   );
   return [header, ...rows].join('\n');
 }

@@ -15,7 +15,7 @@ function printTasks(): void {
 
   tasks.forEach((task) => {
     const status = task.completed ? 'done' : 'todo';
-    console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tag ? ` tag ${task.tag}` : ''}`);
+    console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` tags ${task.tags.join(', ')}` : ''}${task.dueDate ? ` due ${task.dueDate}` : ''}`);
   });
 }
 
@@ -36,9 +36,11 @@ export async function runInteractiveMenu(): Promise<void> {
         const title = (await ask(rl, 'Task title: ')).trim();
         const priorityInput = (await ask(rl, 'Priority (low, medium, high) [medium]: ')).trim();
         const priority = (priorityInput || 'medium') as Priority;
-        const tagInput = (await ask(rl, 'Tag (optional): ')).trim();
-        const task = addTask(title, priority, [], undefined, tagInput || undefined);
-        console.log(`Added task #${task.id}: ${task.title} [${task.priority}]${task.tag ? ` tag ${task.tag}` : ''}`);
+        const tagsInput = (await ask(rl, 'Tags (comma-separated, optional): ')).trim();
+        const dueDate = (await ask(rl, 'Due date (optional): ')).trim();
+        const tags = tagsInput ? tagsInput.split(',').map((tag) => tag.trim()).filter(Boolean) : [];
+        const task = addTask(title, priority, tags, dueDate || undefined);
+        console.log(`Added task #${task.id}: ${task.title} [${task.priority}]${task.tags.length ? ` tags ${task.tags.join(', ')}` : ''}${task.dueDate ? ` due ${task.dueDate}` : ''}`);
         return menu();
       }
       case '2':

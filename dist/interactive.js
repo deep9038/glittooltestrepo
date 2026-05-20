@@ -17,7 +17,7 @@ function printTasks() {
     }
     tasks.forEach((task) => {
         const status = task.completed ? 'done' : 'todo';
-        console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}`);
+        console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tag ? ` tag ${task.tag}` : ''}`);
     });
 }
 async function runInteractiveMenu() {
@@ -34,8 +34,9 @@ async function runInteractiveMenu() {
                 const title = (await ask(rl, 'Task title: ')).trim();
                 const priorityInput = (await ask(rl, 'Priority (low, medium, high) [medium]: ')).trim();
                 const priority = (priorityInput || 'medium');
-                const task = (0, taskService_1.addTask)(title, priority);
-                console.log(`Added task #${task.id}: ${task.title} [${task.priority}]`);
+                const tagInput = (await ask(rl, 'Tag (optional): ')).trim();
+                const task = (0, taskService_1.addTask)(title, priority, [], undefined, tagInput || undefined);
+                console.log(`Added task #${task.id}: ${task.title} [${task.priority}]${task.tag ? ` tag ${task.tag}` : ''}`);
                 return menu();
             }
             case '2':

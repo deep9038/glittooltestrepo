@@ -14,11 +14,12 @@ export function readTasks(): Task[] {
     return [];
   }
 
-  const tasks = JSON.parse(raw) as Array<Task & { tags?: string[]; createdAt?: string }>;
+  const tasks = JSON.parse(raw) as Array<Task & { tags?: string[]; createdAt?: string; dueDate?: string }>;
   return tasks.map((task) => ({
     ...task,
     tags: Array.isArray(task.tags) ? task.tags : [],
     createdAt: typeof task.createdAt === 'string' ? task.createdAt : new Date().toISOString(),
+    dueDate: typeof task.dueDate === 'string' ? task.dueDate : undefined,
   }));
 }
 

@@ -6,7 +6,6 @@ export interface Task {
   completed: boolean;
   priority: Priority;
   tags: string[];
-  tag?: string;
   createdAt: string;
   dueDate?: string;
 }

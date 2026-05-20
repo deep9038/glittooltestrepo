@@ -16,11 +16,12 @@ program
   .description('Add a new task')
   .argument('<title>', 'task title')
   .option('-p, --priority <priority>', 'task priority: low, medium, high', 'medium')
-  .option('-t, --tag <tag>', 'optional task tag')
+  .option('-t, --tags <tags>', 'comma-separated task tags')
   .option('-d, --due-date <dueDate>', 'optional due date string')
-  .action((title: string, options: { priority: Priority; tag?: string; dueDate?: string }) => {
-    const task = addTask(title, options.priority, [], options.dueDate, options.tag);
-    console.log(`Added task #${task.id}: ${task.title} [${task.priority}]${task.tag ? ` tag ${task.tag}` : ''}${task.dueDate ? ` due ${task.dueDate}` : ''}`);
+  .action((title: string, options: { priority: Priority; tags?: string; dueDate?: string }) => {
+    const tags = options.tags ? options.tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [];
+    const task = addTask(title, options.priority, tags, options.dueDate);
+    console.log(`Added task #${task.id}: ${task.title} [${task.priority}]${task.tags.length ? ` tags ${task.tags.join(', ')}` : ''}${task.dueDate ? ` due ${task.dueDate}` : ''}`);
   });
 
 program
@@ -35,7 +36,7 @@ program
 
     tasks.forEach((task) => {
       const status = task.completed ? 'done' : 'todo';
-      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
+      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` [${task.tags.join(', ')}]` : ''} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
     });
   });
 
@@ -66,7 +67,7 @@ program
 
     tasks.forEach((task) => {
       const status = task.completed ? 'done' : 'todo';
-      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
+      console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}${task.tags.length ? ` [${task.tags.join(', ')}]` : ''} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
     });
   });
 

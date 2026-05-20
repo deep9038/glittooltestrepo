@@ -14,10 +14,11 @@ program
     .description('Add a new task')
     .argument('<title>', 'task title')
     .option('-p, --priority <priority>', 'task priority: low, medium, high', 'medium')
-    .option('-t, --tag <tag>', 'task tag (repeatable)', (value, previous = []) => [...previous, value], [])
+    .option('-t, --tag <tag>', 'optional task tag')
+    .option('-d, --due-date <dueDate>', 'optional due date string')
     .action((title, options) => {
-    const task = (0, taskService_1.addTask)(title, options.priority, options.tag);
-    console.log(`Added task #${task.id}: ${task.title} [${task.priority}]`);
+    const task = (0, taskService_1.addTask)(title, options.priority, [], options.dueDate, options.tag);
+    console.log(`Added task #${task.id}: ${task.title} [${task.priority}]${task.tag ? ` tag ${task.tag}` : ''}${task.dueDate ? ` due ${task.dueDate}` : ''}`);
 });
 program
     .command('list')
@@ -30,7 +31,7 @@ program
     }
     tasks.forEach((task) => {
         const status = task.completed ? 'done' : 'todo';
-        console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}`);
+        console.log(`#${task.id} [${status}] [${task.priority}] ${task.title} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
     });
 });
 program
@@ -57,7 +58,7 @@ program
     }
     tasks.forEach((task) => {
         const status = task.completed ? 'done' : 'todo';
-        console.log(`#${task.id} [${status}] [${task.priority}] ${task.title}`);
+        console.log(`#${task.id} [${status}] [${task.priority}] ${task.title} (created ${task.createdAt})${task.dueDate ? ` (due ${task.dueDate})` : ''}`);
     });
 });
 program
@@ -74,6 +75,13 @@ program
     .action((id) => {
     const removed = (0, taskService_1.deleteTask)(Number(id));
     console.log(removed ? `Deleted task #${id}.` : 'Task not found.');
+});
+program
+    .command('deleteAll')
+    .description('Delete all tasks')
+    .action(() => {
+    const deletedCount = (0, taskService_1.deleteAllTasks)();
+    console.log(deletedCount > 0 ? `Deleted all ${deletedCount} task${deletedCount === 1 ? '' : 's'}.` : 'No tasks found.');
 });
 program.option('--interactive', 'launch interactive task menu');
 const options = program.parse(['node', 'dist/index.js', ...process.argv.slice(2)]).opts();

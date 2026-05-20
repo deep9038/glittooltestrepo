@@ -6,7 +6,7 @@ function nextId(tasks: Task[]): number {
   return tasks.reduce((max, task) => Math.max(max, task.id), 0) + 1;
 }
 
-export function addTask(title: string, priority: Priority = 'medium', tags: string[] = [], dueDate?: string, tag?: string): Task {
+export function addTask(title: string, priority: Priority = 'medium', tags: string[] = [], dueDate?: string): Task {
   const tasks = readTasks();
   const task: Task = {
     id: nextId(tasks),
@@ -14,9 +14,8 @@ export function addTask(title: string, priority: Priority = 'medium', tags: stri
     completed: false,
     priority,
     tags,
-    ...(tag ? { tag } : {}),
     createdAt: new Date().toISOString(),
-    ...(dueDate ? { dueDate } : {}),
+    dueDate,
   };
 
   tasks.push(task);
@@ -44,7 +43,7 @@ export function searchTasks(query: string): Task[] {
   const tasks = readTasks();
   const normalizedQuery = query.toLowerCase();
   return tasks.filter((task) => {
-    const haystacks = [task.title, task.tag ?? '', ...task.tags];
+    const haystacks = [task.title, ...task.tags, task.dueDate ?? ''];
     return haystacks.some((value) => value.toLowerCase().includes(normalizedQuery));
   });
 }
