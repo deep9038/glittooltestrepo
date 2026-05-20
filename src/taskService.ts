@@ -48,6 +48,10 @@ export function searchTasks(query: string): Task[] {
   });
 }
 
+export function filterByPriority(priority: Priority): Task[] {
+  return readTasks().filter((task) => task.priority === priority);
+}
+
 export function exportTasks(): string {
   return tasksToCsv(readTasks());
 }
