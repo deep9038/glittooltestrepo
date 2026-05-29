@@ -3,7 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addTask = addTask;
 exports.listTasks = listTasks;
 exports.markDone = markDone;
+exports.updateTask = updateTask;
 exports.searchTasks = searchTasks;
+exports.filterByPriority = filterByPriority;
 exports.exportTasks = exportTasks;
 exports.deleteTask = deleteTask;
 exports.deleteAllTasks = deleteAllTasks;
@@ -12,7 +14,7 @@ const csv_1 = require("./csv");
 function nextId(tasks) {
     return tasks.reduce((max, task) => Math.max(max, task.id), 0) + 1;
 }
-function addTask(title, priority = 'medium', tags = [], dueDate, tag) {
+function addTask(title, priority = 'medium', tags = [], dueDate) {
     const tasks = (0, storage_1.readTasks)();
     const task = {
         id: nextId(tasks),
@@ -20,9 +22,8 @@ function addTask(title, priority = 'medium', tags = [], dueDate, tag) {
         completed: false,
         priority,
         tags,
-        ...(tag ? { tag } : {}),
         createdAt: new Date().toISOString(),
-        ...(dueDate ? { dueDate } : {}),
+        dueDate,
     };
     tasks.push(task);
     (0, storage_1.writeTasks)(tasks);
@@ -41,13 +42,31 @@ function markDone(id) {
     (0, storage_1.writeTasks)(tasks);
     return task;
 }
+function updateTask(id, updates) {
+    const tasks = (0, storage_1.readTasks)();
+    const task = tasks.find((item) => item.id === id);
+    if (!task) {
+        return null;
+    }
+    if (updates.title !== undefined) {
+        task.title = updates.title;
+    }
+    if (updates.priority !== undefined) {
+        task.priority = updates.priority;
+    }
+    (0, storage_1.writeTasks)(tasks);
+    return task;
+}
 function searchTasks(query) {
     const tasks = (0, storage_1.readTasks)();
     const normalizedQuery = query.toLowerCase();
     return tasks.filter((task) => {
-        const haystacks = [task.title, task.tag ?? '', ...task.tags];
+        const haystacks = [task.title, ...task.tags, task.dueDate ?? ''];
         return haystacks.some((value) => value.toLowerCase().includes(normalizedQuery));
     });
+}
+function filterByPriority(priority) {
+    return (0, storage_1.readTasks)().filter((task) => task.priority === priority);
 }
 function exportTasks() {
     return (0, csv_1.tasksToCsv)((0, storage_1.readTasks)());

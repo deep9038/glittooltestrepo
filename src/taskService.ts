@@ -39,6 +39,25 @@ export function markDone(id: number): Task | null {
   return task;
 }
 
+export function updateTask(id: number, updates: { title?: string; priority?: Priority }): Task | null {
+  const tasks = readTasks();
+  const task = tasks.find((item) => item.id === id);
+  if (!task) {
+    return null;
+  }
+
+  if (updates.title !== undefined) {
+    task.title = updates.title;
+  }
+
+  if (updates.priority !== undefined) {
+    task.priority = updates.priority;
+  }
+
+  writeTasks(tasks);
+  return task;
+}
+
 export function searchTasks(query: string): Task[] {
   const tasks = readTasks();
   const normalizedQuery = query.toLowerCase();
